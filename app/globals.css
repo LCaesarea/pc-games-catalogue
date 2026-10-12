@@ -1,0 +1,108 @@
+.pcg {
+  font-family: system-ui, sans-serif;
+  color: #1a1a1a;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+  line-height: 1.5;
+}
+
+.pcg .site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.pcg .site-nav a {
+  color: #1a4fd6;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.pcg .site-nav a:hover {
+  text-decoration: underline;
+}
+
+.pcg .main {
+  padding-top: 1rem;
+}
+
+.pcg .page-header h1 {
+  margin: 0 0 0.25rem;
+}
+
+.pcg .produced-at {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.pcg .card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.pcg .game-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.pcg .game-card h3 {
+  margin: 0 0 0.25rem;
+}
+
+.pcg .game-meta {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0 0 0.5rem;
+}
+
+.pcg .wishlist-button {
+  cursor: pointer;
+  padding: 0.35rem 0.75rem;
+}
+
+.pcg .wishlist-button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.pcg .release-list ul {
+  padding-left: 1.25rem;
+}
+
+.pcg .release-list li {
+  margin-bottom: 0.75rem;
+}
+
+.pcg .release-date {
+  color: #555;
+}
+
+.pcg .tools-banner {
+  background: #f3f4f6;
+  border-left: 4px solid #1a4fd6;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.pcg .search-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 0.5rem;
+}
+
+.pcg .search-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pcg .search-count {
+  color: #555;
+}
