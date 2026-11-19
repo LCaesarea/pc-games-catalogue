@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Assignment 2: Strapi
+cms/node_modules
+cms/dist
+cms/build
+cms/.cache
+cms/.tmp
+cms/public/uploads/*
+!cms/public/uploads/.gitkeep
+!cms/.env
+!.env
+!.env.example

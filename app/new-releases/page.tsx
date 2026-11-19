@@ -5,10 +5,10 @@ import { getReleases } from "../../data/releases";
 
 export const dynamic = "force-dynamic";
 
-export default function NewReleasesPage() {
+export default async function NewReleasesPage() {
   const now = new Date();
   const today = now.toISOString().slice(0, 10);
-  const releases = getReleases();
+  const releases = await getReleases();
   const outNow = releases.filter((release) => release.date <= today);
   const comingUp = releases.filter((release) => release.date > today);
 

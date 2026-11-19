@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cms:install": "npm --prefix cms ci",
+    "cms:setup-local": "npm --prefix cms install better-sqlite3 --no-save",
+    "cms": "node seed-tools/cms-local.mjs develop",
+    "cms:import": "node seed-tools/cms-local.mjs import",
+    "cms:export": "node seed-tools/cms-local.mjs export"
   },
   "dependencies": {
     "next": "16.3.1",
@@ -24,6 +29,7 @@
   },
   "browserslist": [
     "last 2 versions",
-    "not dead"
+    "not dead",
+    "not op_mini all"
   ]
 }

@@ -1,22 +1,21 @@
 "use client";
-// Needs the browser: useState for the filters, change handlers, and results that are only produced after the page loads.
+// Needs the browser: useState for the filters and change handlers. The games arrive as props from the server page.
 import { useState } from "react";
 import GameCard from "./GameCard";
-import { getGames, getGenres } from "../data/games";
-import { useIsClient } from "../lib/useIsClient";
+import type { Game } from "../data/types";
 
-export default function SearchPanel() {
-  const isClient = useIsClient();
+type SearchPanelProps = {
+  games: Game[];
+  genres: string[];
+};
+
+export default function SearchPanel({ games, genres }: SearchPanelProps) {
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState("");
   const [coopOnly, setCoopOnly] = useState(false);
 
-  if (!isClient) {
-    return <p className="search-placeholder">Loading search…</p>;
-  }
-
   const text = query.trim().toLowerCase();
-  const results = getGames().filter(
+  const results = games.filter(
     (game) =>
       (text === "" || game.title.toLowerCase().includes(text)) &&
       (genre === "" || game.genres.includes(genre)) &&
@@ -34,7 +33,7 @@ export default function SearchPanel() {
           Genre
           <select value={genre} onChange={(event) => setGenre(event.target.value)}>
             <option value="">All genres</option>
-            {getGenres().map((name) => (
+            {genres.map((name) => (
               <option key={name} value={name}>
                 {name}
               </option>
@@ -48,8 +47,8 @@ export default function SearchPanel() {
       </div>
       <p className="search-count">{results.length} games found</p>
       <div className="card-grid">
-        {results.map((game) => (
-          <GameCard key={game.slug} game={game} />
+        {results.map((game, index) => (
+          <GameCard key={game.slug} game={game} priority={index === 0} />
         ))}
       </div>
     </div>

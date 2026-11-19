@@ -1,0 +1,118 @@
+# NEW Lesson 4.1 — docker-compose.yml
+#
+# This file goes at the ROOT of your project, beside package.json and app/.
+#
+# It describes two programs and how they are wired together. One command,
+# `docker compose up`, starts both of them in the right order.
+
+services:
+
+  # -------------------------------------------------------------------------
+  # THE CONTENT MANAGEMENT SYSTEM
+  # -------------------------------------------------------------------------
+  strapi:
+    container_name: strapi
+
+    # `build` means: make the image yourself, using the recipe in cms/Dockerfile.
+    # The other service below uses `image`, which means: download a ready-made
+    # one. Those are the two ways a container can come into existence.
+    build: ./cms
+
+    # Name the image we just built, so `docker images` shows something readable.
+    image: inft3102-strapi:local
+
+    restart: unless-stopped
+
+    # Read every setting from cms/.env instead of repeating them here.
+    env_file: ./cms/.env
+
+    ports:
+      # "outside:inside". Port 1337 inside the container is published as port
+      # 1337 on your own machine, which is why http://localhost:1337 reaches it.
+      - "1337:1337"
+
+    volumes:
+      # BIND MOUNTS. Each line makes a folder on YOUR DISK appear inside the
+      # container. They are the reason the content type you build by clicking
+      # shows up in WebStorm and can be committed to Git.
+      #
+      # Note what is NOT mounted: node_modules. It lives at /opt inside the
+      # image, one level above /opt/app, so these mounts cannot hide it.
+      - ./cms/config:/opt/app/config
+      - ./cms/src:/opt/app/src
+      - ./cms/package.json:/opt/package.json
+      - ./cms/package-lock.json:/opt/package-lock.json
+      - ./cms/.env:/opt/app/.env
+      - ./cms/public/uploads:/opt/app/public/uploads
+      # ASSIGNMENT 2: lets `strapi export --file seed/a2-content` inside the
+      # container write into cms/seed on disk, so the export can be committed,
+      # and lets `strapi import --file seed/a2-content.tar.gz` read it back.
+      - ./cms/seed:/opt/app/seed
+
+    depends_on:
+      strapiDB:
+        # Postgres accepts connections a few seconds after its container
+        # starts. Without this, Strapi wins the race, fails to connect, and
+        # exits — reliably, on slower machines, and confusingly.
+        condition: service_healthy
+
+    networks:
+      - inft3102
+
+  # -------------------------------------------------------------------------
+  # THE DATABASE
+  # -------------------------------------------------------------------------
+  strapiDB:
+    # THE SERVICE NAME IS AN ADDRESS.
+    # DATABASE_HOST in cms/.env is set to strapiDB — this word, right here.
+    # Containers on the same network find each other by service name.
+    container_name: strapiDB
+
+    # No Dockerfile. This image already exists and is downloaded as-is.
+    # The version is pinned so that every machine runs the same database.
+    image: postgres:16-alpine
+
+    restart: unless-stopped
+
+    environment:
+      # These three values create the database and its user the first time
+      # this container ever starts. THEY MUST MATCH DATABASE_USERNAME,
+      # DATABASE_PASSWORD and DATABASE_NAME in cms/.env exactly. If they
+      # disagree, Strapi cannot log in to its own database and the log fills
+      # with authentication failures that name neither file.
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi
+      POSTGRES_DB: strapi
+
+    volumes:
+      # A NAMED VOLUME, not a bind mount. Docker keeps this storage outside the
+      # container, on its own. Your administrator account and every course you
+      # type in live here, and they survive `docker compose down`.
+      #
+      # They do not survive `docker compose down -v`. Do not type -v.
+      - strapi-data:/var/lib/postgresql/data
+
+    ports:
+      # Published only so you can point a database tool at it if you want to
+      # look. If port 5432 is already taken on your machine — because you have
+      # PostgreSQL installed locally — change the LEFT number to 5433. The
+      # right-hand number is inside the container and must stay 5432.
+      - "5432:5432"
+
+    healthcheck:
+      # Docker runs this command until it succeeds. Only then is the database
+      # considered "healthy" and Strapi allowed to start.
+      test: ["CMD-SHELL", "pg_isready -U strapi -d strapi"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+    networks:
+      - inft3102
+
+volumes:
+  strapi-data:
+
+networks:
+  inft3102:
+    driver: bridge
